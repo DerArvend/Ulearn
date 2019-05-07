@@ -21,37 +21,39 @@ class CommentsPolicy extends Component {
 		const {handleClose} = this.props;
 
 		return (
-			<Modal onClose={handleClose} width={490}>
+			<Modal onClose={handleClose} width="100%">
 				<Modal.Header>Настройки комментариев курса</Modal.Header>
 				<Modal.Body>
-					<div className={styles.toggleEnabled}>
-						<Toggle
-							defaultChecked
-							checked={this.state.commentsEnabled}
-							onChange={() => this.handleToggle(this.state.commentsEnabled)}
-						/>{' '}
-						Студенты {this.state.commentsEnabled ? '' : 'не'} могут оставлять комментарии
-					</div>
-					<div className={styles.moderation}>
-						<span className={styles.moderationHeader}>Модерация комментариев</span>
-						<RadioGroup
-							onChange={this.handleModeration}
-							name="moderation"
-							defaultValue={this.state.commentsEnabled && "postmoderation"}
-							disabled={!this.state.commentsEnabled}>
-							<Gapped vertical gap={10}>
-								<Radio value="premoderation">Премодерация
-									<span className={styles.moderationDescription}>
-										Комментарии студентов по умоланию скрыты
-									</span>
-								</Radio>
-								<Radio  value="postmoderation">Постмодерация
-									<span className={styles.moderationDescription}>
-										Комментарии студентов по умоланию открыты
-									</span>
-								</Radio>
-							</Gapped>
-						</RadioGroup>
+					<div className={styles.modalContent}>
+						<div className={styles.toggleEnabled}>
+							<Toggle
+								defaultChecked
+								checked={this.state.commentsEnabled}
+								onChange={() => this.handleToggle(this.state.commentsEnabled)}
+							/>{' '}
+							Студенты {this.state.commentsEnabled ? '' : 'не'} могут оставлять комментарии
+						</div>
+						<div className={styles.moderation}>
+							<span className={styles.moderationHeader}>Модерация комментариев</span>
+							<RadioGroup
+								onChange={this.handleModeration}
+								name="moderation"
+								defaultValue={this.state.commentsEnabled && "postmoderation"}
+								disabled={!this.state.commentsEnabled}>
+								<Gapped vertical gap={10}>
+									<Radio value="premoderation">Премодерация
+										<span className={styles.moderationDescription}>
+											Комментарии студентов по умоланию скрыты
+										</span>
+									</Radio>
+									<Radio  value="postmoderation">Постмодерация
+										<span className={styles.moderationDescription}>
+											Комментарии студентов по умоланию открыты
+										</span>
+									</Radio>
+								</Gapped>
+							</RadioGroup>
+						</div>
 					</div>
 				</Modal.Body>
 				<Modal.Footer panel={true}>

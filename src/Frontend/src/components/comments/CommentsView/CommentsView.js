@@ -117,7 +117,7 @@ class CommentsView extends Component {
 		const {activeTab, commentsPolicy} = this.state;
 
 		return (
-			<div className={styles.commentsContainer} key={this.state.activeTab}>
+			<div key={this.state.activeTab}>
 				<CommentsList
 					slideType={slideType}
 					handleInstructorsCommentCount={this.handleInstructorsCommentCount}
@@ -156,7 +156,6 @@ class CommentsView extends Component {
 			window.history.pushState("", document.title, window.location.pathname + window.location.search);
 		}
 	};
-
 
 	handleInstructorsCommentCount = (action) => {
 		if (action === "add") {
