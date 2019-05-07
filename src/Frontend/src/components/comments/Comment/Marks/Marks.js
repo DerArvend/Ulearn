@@ -10,6 +10,7 @@ import MenuHeader from "@skbkontur/react-ui/components/MenuHeader/MenuHeader";
 import styles from "./Marks.less";
 
 export default function Marks({courseId, comment, canViewStudentsGroup, authorGroups}) {
+	console.log(authorGroups);
 	const windowUrl = `${window.location.origin}/${courseId}`;
 	return (
 		<>
@@ -66,23 +67,23 @@ const GroupMark = ({url, groups}) => (
 				<TooltipMenu
 					menuWidth="150px"
 					positions={["bottom right"]}
-					caption={<div className={styles.groupMarkOnPhone}>
+					caption={<div className={styles.tooltipGroups}>
 						<Icon name="People" color="#fff" size={15} />
 					</div>}>
-					<MenuHeader>Группы</MenuHeader>
+					<MenuHeader><span className={styles.tooltipGroupsHeader}>Группы</span></MenuHeader>
 					<MenuSeparator />
 					{groups.map(group => !group.isArchived &&
 						<MenuItem
 							key={group.id}
 							href={group.apiUrl && `${url}${group.apiUrl}`}>
-							{group.name}
+							<span className={styles.tooltipGroupName}>{group.name}</span>
 						</MenuItem>)}
 					<MenuSeparator />
 					{groups.map(group => group.isArchived &&
 						<MenuItem
 							key={group.id}
 							href={group.apiUrl && `${url}${group.apiUrl}`}>
-							{group.name}
+							<span className={styles.tooltipGroupName}>{group.name}</span>
 						</MenuItem>)}
 				</TooltipMenu>
 			</div>
