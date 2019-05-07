@@ -3,8 +3,11 @@ import PropTypes from "prop-types";
 import { userRoles, user } from "../commonPropTypes";
 import api from "../../../api";
 import { TABS, ROLES } from "../../../consts/general";
+import Icon from "@skbkontur/react-icons";
 import Tabs from "@skbkontur/react-ui/components/Tabs/Tabs";
+import Button from "@skbkontur/react-ui/components/Button/Button";
 import CommentsList from "../CommentsList/CommentsList";
+import CommentsPolicy from "../CommentsPolicy/CommentsPolicy";
 
 import styles from "./CommentsView.less";
 
@@ -14,9 +17,9 @@ class CommentsView extends Component {
 
 		this.state = {
 			instructorsComments: [],
-			commentPolicy: {},
+			commentsPolicy: {},
 			activeTab: TABS.allComments,
-			openModal: false,
+			openWindowSettings: false,
 			instructorsCommentCount: 0,
 		};
 
@@ -38,9 +41,9 @@ class CommentsView extends Component {
 
 	loadCommentPolicy = (courseId) => {
 		this.props.commentsApi.getCommentPolicy(courseId)
-			.then(commentPolicy => {
+			.then(commentsPolicy => {
 				this.setState ({
-					commentPolicy: commentPolicy,
+					commentsPolicy: commentsPolicy,
 				})
 			})
 			.catch(console.error);
@@ -59,26 +62,17 @@ class CommentsView extends Component {
 	};
 
 	render() {
-		const {user, userRoles, courseId, slideId, slideType, commentsApi} = this.props;
+		const {openWindowSettings, commentsPolicy} = this.state;
 
 		return (
 			<div className={styles.wrapper}>
 				{this.renderHeader()}
-				<div key={this.state.activeTab}>
-					<CommentsList
-						slideType={slideType}
-						handleInstructorsCommentCount={this.handleInstructorsCommentCount}
-						handleTabChange={this.handleTabChange}
-						headerRef={this.headerRef}
-						forInstructors={this.state.activeTab === TABS.instructorsComments}
-						commentsApi={commentsApi}
-						commentPolicy={this.state.commentPolicy}
-						user={user}
-						userRoles={userRoles}
-						slideId={slideId}
-						courseId={courseId}>
-					</CommentsList>
-				</div>
+				{openWindowSettings &&
+				<CommentsPolicy
+					commentsPolicy={commentsPolicy}
+					handleClose={this.handleCloseWindowSettings}
+					handleSubmit={this.handleSaveSettings} />}
+				{this.renderComments()}
 			</div>
 		)
 	};
@@ -91,6 +85,13 @@ class CommentsView extends Component {
 			<header className={styles.header} ref={this.headerRef}>
 				<div className={styles.headerRow}>
 					<h1 className={styles.headerName}>Комментарии</h1>
+					{(userRoles.isSystemAdministrator || userRoles.courseRole === 'courseAdmin') &&
+					<Button
+						size="small"
+						icon={<Icon.Settings />}
+						onClick={this.handleOpenWindowSettings}>
+						Настроить
+					</Button>}
 				</div>
 				{this.isInstructor(userRoles) &&
 				<div className={styles.tabs}>
@@ -110,6 +111,29 @@ class CommentsView extends Component {
 			</header>
 		)
 	};
+
+	renderComments() {
+		const {user, userRoles, courseId, slideId, slideType, commentsApi} = this.props;
+		const {activeTab, commentsPolicy} = this.state;
+
+		return (
+			<div className={styles.commentsContainer} key={this.state.activeTab}>
+				<CommentsList
+					slideType={slideType}
+					handleInstructorsCommentCount={this.handleInstructorsCommentCount}
+					handleTabChange={this.handleTabChange}
+					headerRef={this.headerRef}
+					forInstructors={activeTab === TABS.instructorsComments}
+					commentsApi={commentsApi}
+					commentPolicy={commentsPolicy}
+					user={user}
+					userRoles={userRoles}
+					slideId={slideId}
+					courseId={courseId}>
+				</CommentsList>
+			</div>
+		)
+	}
 
 	isCourseAdmin(userRoles) {
 		return userRoles.isSystemAdministrator ||
@@ -133,6 +157,7 @@ class CommentsView extends Component {
 		}
 	};
 
+
 	handleInstructorsCommentCount = (action) => {
 		if (action === "add") {
 			this.setState({
@@ -143,7 +168,33 @@ class CommentsView extends Component {
 				instructorsCommentCount: this.state.instructorsCommentCount - 1,
 			})
 		}
-	}
+	};
+
+	handleOpenWindowSettings = () => {
+		this.setState({
+			openWindowSettings: true,
+		});
+	};
+
+	handleCloseWindowSettings = () => {
+		this.setState({
+			openWindowSettings: false,
+		})
+	};
+
+	handleSaveSettings = (commentsEnabled, moderationValue) => {
+		const commentsPolicySettings = {
+			areCommentsEnabled: commentsEnabled,
+			moderationPolicy: moderationValue,
+			onlyInstructorsCanReply: false,
+		};
+
+		this.props.commentsApi.updateCommentPolicy(this.props.courseId, commentsPolicySettings);
+		this.setState({
+			commentsPolicy: commentsPolicySettings,
+		});
+		this.handleCloseWindowSettings();
+	};
 }
 
 CommentsView.propTypes = {

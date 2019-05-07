@@ -42,3 +42,9 @@ export function getCommentPolicy(courseId) {
 	return api.get(`comment-policies?course_id=${courseId}`);
 }
 
+export function updateCommentPolicy(courseId, commentsPolicySettings) {
+	return api.patch(`comment-policies?course_id=${courseId}`,
+		api.createRequestParams(commentsPolicySettings)
+	);
+}
+
