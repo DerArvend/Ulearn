@@ -77,7 +77,7 @@ namespace Ulearn.Web.Api.Controllers.Comments
 			{
 				commentInfo.AuthorGroups = authorId2Groups[comment.AuthorId]
 					.Where(g => canViewAllGroupMembers || userAvailableGroups.Contains(g.Id))
-					.Select(g => BuildShortGroupInfo(g, userAvailableGroups.Contains(g.Id)))
+					.Select(BuildShortGroupInfo)
 					.ToList().NullIfEmpty();
 			}
 
@@ -106,16 +106,14 @@ namespace Ulearn.Web.Api.Controllers.Comments
 			return commentInfo;
 		}
 
-		private ShortGroupInfo BuildShortGroupInfo(Group g, bool isGroupVisibleForUser)
+		private ShortGroupInfo BuildShortGroupInfo(Group g)
 		{
 			return new ShortGroupInfo
 			{
 				Id = g.Id,
 				Name = g.Name,
 				IsArchived = g.IsArchived,
-				ApiUrl = isGroupVisibleForUser
-					? Url.Action(new UrlActionContext { Action = nameof(GroupController.Group), Controller = "Group", Values = new { groupId = g.Id }})
-					: null
+				ApiUrl = Url.Action(new UrlActionContext { Action = nameof(GroupController.Group), Controller = "Group", Values = new { groupId = g.Id }})
 			};
 		}
 

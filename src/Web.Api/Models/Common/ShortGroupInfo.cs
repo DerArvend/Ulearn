@@ -15,8 +15,7 @@ namespace Ulearn.Web.Api.Models.Common
 		[DataMember]
 		public bool IsArchived { get; set; }
 
-		[CanBeNull]
 		[DataMember]
-		public string ApiUrl { get; set; } // null, если нет прав на переход на страницу группы
+		public string ApiUrl { get; set; }
 	}
 }
