@@ -46,21 +46,29 @@
   min-width: 0;
   max-width: 170px;
   padding: 1px 6px;
-  border: 1px solid @accentColor;
-  color: @accentColor;
   overflow: hidden;
   text-overflow: ellipsis;
   letter-spacing: 0.2px;
 }
 
-.archiveGroup {
+.activeGroup {
+  border: 1px solid @accentColor;
+  color: @accentColor;
+}
+
+.archivedGroup {
   border: 1px solid @disabledColor;
   color: @disabledColor;
 }
 
-.groupName,
-.groupName:hover {
+.activeGroupName,
+.activeGroupName:hover {
   color: @accentColor;
+}
+
+.archivedGroupName,
+.archivedGroupName:hover {
+  color: @disabledColor;
 }
 
 .tooltipGroups {

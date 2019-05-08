@@ -6,11 +6,11 @@ import TooltipMenu from "@skbkontur/react-ui/components/TooltipMenu/TooltipMenu"
 import MenuItem from "@skbkontur/react-ui/components/MenuItem/MenuItem";
 import MenuSeparator from "@skbkontur/react-ui/components/MenuSeparator/MenuSeparator";
 import MenuHeader from "@skbkontur/react-ui/components/MenuHeader/MenuHeader";
+import Hint from "@skbkontur/react-ui/components/Hint/Hint";
 
 import styles from "./Marks.less";
 
 export default function Marks({courseId, comment, canViewStudentsGroup, authorGroups}) {
-	console.log(authorGroups);
 	const windowUrl = `${window.location.origin}/${courseId}`;
 	return (
 		<>
@@ -49,18 +49,18 @@ const PinnedToTopMark = () => (
 	</div>
 );
 
-const GroupMark = ({url, groups}) => (
+export function GroupMark({url, groups}) {
+	const activeGroups = groups.filter(group => !group.isArchived);
+	const archivedGroups = groups.filter(group => group.isArchived);
+
+	return (
 		<>
 			<div className={styles.visibleOnDesktopAndTablet}>
 				<div className={styles.groupList}>
-					{groups.map(group =>
-						<div key={group.id} className={`${styles.mark} ${styles.group} ${group.isArchived && styles.archiveGroup}`}>
-							<Icon name="People" size={15} />
-							<a href={group.apiUrl && `${url}${group.apiUrl}`}
-							   className={`${styles.text} ${styles.groupName}`}>
-								{group.name}
-							</a>
-						</div>)}
+					{activeGroups && activeGroups.map(group =>
+						renderGroupsList(url, group, "activeGroup", "activeGroupName"))}
+					{archivedGroups && archivedGroups.map(group =>
+						renderGroupsList(url, group, "archivedGroup", "archivedGroupName"))}
 				</div>
 			</div>
 			<div className={styles.visibleOnPhone}>
@@ -70,25 +70,44 @@ const GroupMark = ({url, groups}) => (
 					caption={<div className={styles.tooltipGroups}>
 						<Icon name="People" color="#fff" size={15} />
 					</div>}>
-					<MenuHeader><span className={styles.tooltipGroupsHeader}>Группы</span></MenuHeader>
+					<MenuHeader>
+						<span className={`${styles.tooltipGroupsHeader} ${styles.activeGroupName}`}>
+							Группы
+						</span>
+					</MenuHeader>
 					<MenuSeparator />
-					{groups.map(group => !group.isArchived &&
-						<MenuItem
-							key={group.id}
-							href={group.apiUrl && `${url}${group.apiUrl}`}>
-							<span className={styles.tooltipGroupName}>{group.name}</span>
-						</MenuItem>)}
-					<MenuSeparator />
-					{groups.map(group => group.isArchived &&
-						<MenuItem
-							key={group.id}
-							href={group.apiUrl && `${url}${group.apiUrl}`}>
-							<span className={styles.tooltipGroupName}>{group.name}</span>
-						</MenuItem>)}
+					{activeGroups && activeGroups.map(group =>
+						renderTooltipGroupsList(url, group))}
+					{archivedGroups && archivedGroups.map(group =>
+						renderTooltipGroupsList(url, group, "archivedGroupName"))}
 				</TooltipMenu>
 			</div>
-		</>
-);
+		</>)
+};
+
+export function renderGroupsList(url, group, groupStyle, groupName) {
+	return (
+		<Hint key={group.id} pos="right middle" text={group.name}>
+			<div className={`${styles.mark} ${styles.group} ${styles[groupStyle]}`}>
+				<Icon name="People" size={15} />
+				<a href={group.apiUrl && `${url}${group.apiUrl}`}
+				   className={`${styles.text} ${styles[groupName]}`}>
+					{group.name}
+				</a>
+			</div>
+		</Hint>
+	);
+};
+
+export function renderTooltipGroupsList(url, group, groupName) {
+	return (
+		<MenuItem
+			key={group.id}
+			href={group.apiUrl && `${url}${group.apiUrl}`}>
+			<span className={`${styles.tooltipGroupName} ${styles[groupName]}`}>{group.name}</span>
+		</MenuItem>
+	)
+};
 
 Marks.propTypes = {
 	authorGroups: PropTypes.arrayOf(group),
