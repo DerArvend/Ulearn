@@ -44,7 +44,8 @@ public static System.Web.WebPages.HelperResult GetAvatarPlaceholderColor(Applica
 #line hidden
 return new System.Web.WebPages.HelperResult(__razor_helper_writer => {
  
-	var hue = Math.Abs(user.Id.GetHashCode()) % 360;
+	var hashForColor = user.Id.Aggregate(0, (a, i) => a += i);
+	var hue = Math.Abs(hashForColor) % 360;
 
 WriteLiteralTo(__razor_helper_writer, "\t");
 
@@ -102,20 +103,20 @@ return new System.Web.WebPages.HelperResult(__razor_helper_writer => {
 
 WriteLiteralTo(__razor_helper_writer, "\t\t<img");
 
-WriteAttributeTo(__razor_helper_writer, "class", Tuple.Create(" class=\"", 613), Tuple.Create("\"", 642)
-, Tuple.Create(Tuple.Create("", 621), Tuple.Create("user__avatar", 621), true)
-, Tuple.Create(Tuple.Create(" ", 633), Tuple.Create<System.Object, System.Int32>(classes
-, 634), false)
+WriteAttributeTo(__razor_helper_writer, "class", Tuple.Create(" class=\"", 646), Tuple.Create("\"", 675)
+, Tuple.Create(Tuple.Create("", 654), Tuple.Create("user__avatar", 654), true)
+, Tuple.Create(Tuple.Create(" ", 666), Tuple.Create<System.Object, System.Int32>(classes
+, 667), false)
 );
 
-WriteAttributeTo(__razor_helper_writer, "src", Tuple.Create(" src=\"", 643), Tuple.Create("\"", 664)
-, Tuple.Create(Tuple.Create("", 649), Tuple.Create<System.Object, System.Int32>(user.AvatarUrl
-, 649), false)
+WriteAttributeTo(__razor_helper_writer, "src", Tuple.Create(" src=\"", 676), Tuple.Create("\"", 697)
+, Tuple.Create(Tuple.Create("", 682), Tuple.Create<System.Object, System.Int32>(user.AvatarUrl
+, 682), false)
 );
 
-WriteAttributeTo(__razor_helper_writer, "alt", Tuple.Create(" alt=\"", 665), Tuple.Create("\"", 721)
-, Tuple.Create(Tuple.Create("", 671), Tuple.Create<System.Object, System.Int32>(HttpUtility.HtmlAttributeEncode(user.VisibleName)
-, 671), false)
+WriteAttributeTo(__razor_helper_writer, "alt", Tuple.Create(" alt=\"", 698), Tuple.Create("\"", 754)
+, Tuple.Create(Tuple.Create("", 704), Tuple.Create<System.Object, System.Int32>(HttpUtility.HtmlAttributeEncode(user.VisibleName)
+, 704), false)
 );
 
 WriteLiteralTo(__razor_helper_writer, "/>\r\n");
@@ -126,17 +127,17 @@ WriteLiteralTo(__razor_helper_writer, "/>\r\n");
 
 WriteLiteralTo(__razor_helper_writer, "\t\t<div");
 
-WriteAttributeTo(__razor_helper_writer, "class", Tuple.Create(" class=\"", 747), Tuple.Create("\"", 802)
-, Tuple.Create(Tuple.Create("", 755), Tuple.Create("user__avatar", 755), true)
-, Tuple.Create(Tuple.Create(" ", 767), Tuple.Create("user__avatar__placeholder", 768), true)
-, Tuple.Create(Tuple.Create(" ", 793), Tuple.Create<System.Object, System.Int32>(classes
-, 794), false)
+WriteAttributeTo(__razor_helper_writer, "class", Tuple.Create(" class=\"", 780), Tuple.Create("\"", 835)
+, Tuple.Create(Tuple.Create("", 788), Tuple.Create("user__avatar", 788), true)
+, Tuple.Create(Tuple.Create(" ", 800), Tuple.Create("user__avatar__placeholder", 801), true)
+, Tuple.Create(Tuple.Create(" ", 826), Tuple.Create<System.Object, System.Int32>(classes
+, 827), false)
 );
 
-WriteAttributeTo(__razor_helper_writer, "style", Tuple.Create(" style=\"", 803), Tuple.Create("\"", 861)
-, Tuple.Create(Tuple.Create("", 811), Tuple.Create("background-color:", 811), true)
-              , Tuple.Create(Tuple.Create(" ", 828), Tuple.Create<System.Object, System.Int32>(GetAvatarPlaceholderColor(user)
-, 829), false)
+WriteAttributeTo(__razor_helper_writer, "style", Tuple.Create(" style=\"", 836), Tuple.Create("\"", 894)
+, Tuple.Create(Tuple.Create("", 844), Tuple.Create("background-color:", 844), true)
+              , Tuple.Create(Tuple.Create(" ", 861), Tuple.Create<System.Object, System.Int32>(GetAvatarPlaceholderColor(user)
+, 862), false)
 );
 
 WriteLiteralTo(__razor_helper_writer, ">");

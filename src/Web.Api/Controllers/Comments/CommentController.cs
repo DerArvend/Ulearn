@@ -97,7 +97,7 @@ namespace Ulearn.Web.Api.Controllers.Comments
 			if (isInstructor)
 			{
 				canViewAllGroupMembers = await groupAccessesRepo.CanUserSeeAllCourseGroupsAsync(User.GetUserId(), comment.CourseId).ConfigureAwait(false);
-				userAvailableGroupsIds = (await groupAccessesRepo.GetAvailableForUserGroupsAsync(User.GetUserId()).ConfigureAwait(false)).Select(g => g.Id).ToHashSet();
+				userAvailableGroupsIds = (await groupAccessesRepo.GetAvailableForUserGroupsAsync(User.GetUserId(), true, true).ConfigureAwait(false)).Select(g => g.Id).ToHashSet();
 			}
 
 			if (parameters.WithReplies)
@@ -106,7 +106,7 @@ namespace Ulearn.Web.Api.Controllers.Comments
 				var allComments = replies.Append(comment).ToList();
 				likesCount = await commentLikesRepo.GetLikesCountsAsync(replies.Append(comment).Select(c => c.Id)).ConfigureAwait(false);
 				var authorsIds = allComments.Select(c => c.Author.Id).Distinct().ToList();
-				var authors2Groups = !isInstructor ? null : await groupMembersRepo.GetUsersGroupsAsync(comment.CourseId, authorsIds).ConfigureAwait(false);
+				var authors2Groups = !isInstructor ? null : await groupMembersRepo.GetUsersGroupsAsync(comment.CourseId, authorsIds, true).ConfigureAwait(false);
 				return BuildCommentResponse(
 					comment,
 					canUserSeeNotApprovedComments, new DefaultDictionary<int, List<Comment>> { {commentId, replies }}, likesCount, likedByUserCommentsIds,

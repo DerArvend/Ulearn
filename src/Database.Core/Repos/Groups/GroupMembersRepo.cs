@@ -117,39 +117,39 @@ namespace Database.Repos.Groups
 			return newMembers;
 		}
 		
-		public Task<List<string>> GetUsersIdsForAllCourseGroupsAsync(string courseId)
+		public Task<List<string>> GetUsersIdsForAllCourseGroupsAsync(string courseId, bool includeArchived = false)
 		{
-			var groupsIds = groupsRepo.GetCourseGroupsQueryable(courseId).Select(g => g.Id);
+			var groupsIds = groupsRepo.GetCourseGroupsQueryable(courseId, includeArchived).Select(g => g.Id);
 			return db.GroupMembers.Where(m => groupsIds.Contains(m.GroupId)).Select(m => m.UserId).ToListAsync();
 		}
 
 		/* Return Dictionary<userId, List<groupId>> */
-		public Task<Dictionary<string, List<int>>> GetUsersGroupsIdsAsync(string courseId, List<string> usersIds)
+		public Task<Dictionary<string, List<int>>> GetUsersGroupsIdsAsync(string courseId, List<string> usersIds, bool includeArchived = false)
 		{
-			var groupsIds = groupsRepo.GetCourseGroupsQueryable(courseId).Select(g => g.Id);
+			var groupsIds = groupsRepo.GetCourseGroupsQueryable(courseId, includeArchived).Select(g => g.Id);
 			return db.GroupMembers
 				.Where(m => groupsIds.Contains(m.GroupId) && usersIds.Contains(m.UserId))
 				.GroupBy(m => m.UserId)
 				.ToDictionaryAsync(g => g.Key, g => g.Select(m => m.GroupId).ToList());
 		}
 
-		public async Task<List<int>> GetUserGroupsIdsAsync(string courseId, string userId)
+		public async Task<List<int>> GetUserGroupsIdsAsync(string courseId, string userId, bool includeArchived = false)
 		{
-			return (await GetUsersGroupsIdsAsync(courseId, new List<string> { userId }).ConfigureAwait(false))
+			return (await GetUsersGroupsIdsAsync(courseId, new List<string> { userId }, includeArchived).ConfigureAwait(false))
 				.GetOrDefault(userId, new List<int>());
 		}
 
-		public async Task<List<Group>> GetUserGroupsAsync(string courseId, string userId)
+		public async Task<List<Group>> GetUserGroupsAsync(string courseId, string userId, bool includeArchived = false)
 		{
 			var userGroupsIds = await GetUserGroupsIdsAsync(courseId, userId).ConfigureAwait(false);
-			return groupsRepo.GetCourseGroupsQueryable(courseId).Where(g => userGroupsIds.Contains(g.Id)).ToList();
+			return groupsRepo.GetCourseGroupsQueryable(courseId, includeArchived).Where(g => userGroupsIds.Contains(g.Id)).ToList();
 		}
 		
-		public async Task<Dictionary<string, List<Group>>> GetUsersGroupsAsync(string courseId, List<string> usersIds)
+		public async Task<Dictionary<string, List<Group>>> GetUsersGroupsAsync(string courseId, List<string> usersIds, bool includeArchived = false)
 		{
-			var userGroupsIds = await GetUsersGroupsIdsAsync(courseId, usersIds).ConfigureAwait(false);
+			var userGroupsIds = await GetUsersGroupsIdsAsync(courseId, usersIds, includeArchived).ConfigureAwait(false);
 			var ids = userGroupsIds.Values.SelectMany(g => g).Distinct().ToList();
-			var groups = groupsRepo.GetCourseGroupsQueryable(courseId).Where(g => ids.Contains(g.Id)).ToDictionary(g => g.Id, g => g);
+			var groups = groupsRepo.GetCourseGroupsQueryable(courseId, includeArchived).Where(g => ids.Contains(g.Id)).ToDictionary(g => g.Id, g => g);
 			return userGroupsIds.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Select(id => groups[id]).ToList());
 		}
 	}

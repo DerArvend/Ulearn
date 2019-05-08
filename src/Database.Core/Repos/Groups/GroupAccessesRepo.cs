@@ -133,7 +133,7 @@ namespace Database.Repos.Groups
 			return await HasUserAccessToGroupAsync(group.Id, userId).ConfigureAwait(false);
 		}
 
-		private async Task<List<Group>> InternalGetAvailableForUserGroupsAsync([CanBeNull] List<string> coursesIds, string userId, bool onlyArchived=false)
+		private async Task<List<Group>> InternalGetAvailableForUserGroupsAsync([CanBeNull] List<string> coursesIds, string userId, bool includeNonarchived, bool includeArchived)
 		{
 			List<string> coursesWhereUserCanSeeAllGroups;
 			if (coursesIds == null)
@@ -145,7 +145,7 @@ namespace Database.Repos.Groups
 			var groups = db.Groups
 				.Include(g => g.Owner)
 				.Where(g => !g.IsDeleted && 
-							(onlyArchived ? g.IsArchived : !g.IsArchived) &&
+							(includeNonarchived && !g.IsArchived || includeArchived && g.IsArchived) &&
 							(coursesIds == null || coursesIds.Contains(g.CourseId)) &&
 							(
 								/* Course admins can see all groups */
@@ -163,22 +163,22 @@ namespace Database.Repos.Groups
 				.ConfigureAwait(false);
 		}
 		
-		public async Task<List<Group>> GetAvailableForUserGroupsAsync(string courseId, string userId, bool onlyArchived=false)
+		public async Task<List<Group>> GetAvailableForUserGroupsAsync(string courseId, string userId, bool includeNonarchived=true, bool includeArchived=false)
 		{
 			if (!await courseRolesRepo.HasUserAccessToCourseAsync(userId, courseId, CourseRoleType.Instructor).ConfigureAwait(false))
 				return new List<Group>();
 
-			return await InternalGetAvailableForUserGroupsAsync(new List<string> { courseId }, userId, onlyArchived).ConfigureAwait(false);
+			return await InternalGetAvailableForUserGroupsAsync(new List<string> { courseId }, userId, includeNonarchived, includeArchived).ConfigureAwait(false);
 		}		
 		
-		public Task<List<Group>> GetAvailableForUserGroupsAsync(List<string> coursesIds, string userId, bool onlyArchived=false)
+		public Task<List<Group>> GetAvailableForUserGroupsAsync(List<string> coursesIds, string userId, bool includeNonarchived=true, bool includeArchived=false)
 		{
-			return InternalGetAvailableForUserGroupsAsync(coursesIds, userId, onlyArchived);
+			return InternalGetAvailableForUserGroupsAsync(coursesIds, userId, includeNonarchived, includeArchived);
 		}		
 
-		public Task<List<Group>> GetAvailableForUserGroupsAsync(string userId, bool onlyArchived=false)
+		public Task<List<Group>> GetAvailableForUserGroupsAsync(string userId, bool includeNonarchived=true, bool includeArchived=false)
 		{
-			return InternalGetAvailableForUserGroupsAsync(null, userId, onlyArchived);
+			return InternalGetAvailableForUserGroupsAsync(null, userId, includeNonarchived, includeArchived);
 		}
 
 		/* Instructor can view student if he is a course admin or if student is member of one of accessible for instructor group */

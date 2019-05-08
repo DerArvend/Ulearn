@@ -6,7 +6,8 @@
 
 @helper GetAvatarPlaceholderColor(ApplicationUser user)
 {
-	var hue = Math.Abs(user.Id.GetHashCode()) % 360;
+	var hashForColor = user.Id.Aggregate(0, (a, i) => a += i);
+	var hue = Math.Abs(hashForColor) % 360;
 	<text>hsl(@hue, 64%, 75%)</text>
 }
 
