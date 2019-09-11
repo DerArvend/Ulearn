@@ -24,7 +24,7 @@ Content\bootstrap.ulearn.css
 Content\bounce.css
 flexslider\flexslider.css
 katex\katex.min.css
-Content\jquery-ui.min.css
+Content\jquery-ui.css
 Content\main.css
 Content\buttons.css
 Content\likely.css
